@@ -1,10 +1,32 @@
-// Construct HTML elements in Go, with the help of `html/template` package.
+// Construct HTML elements in Go. Can be used together with `html/template` templates.
 //
-// The path package should only be used for paths separated by forward
-// slashes, such as the paths in URLs. This package does not deal with
-// Windows paths with drive letters or backslashes; to manipulate
-// operating system paths, use the [path/filepath] package.
-
+// Use Element, Attrs, and Text. There are also helpers for every html element
+//
+// The structs are fully exposed for the convenience of asserting values during tests
+// but should not be used directly otherwise.
+//
+// Example:
+//
+//	got := dom.Div(
+//		dom.Attrs(
+//			"class", "greeting",
+//			"style", "color: red;",
+//		),
+//		dom.Text("Hello, world!"),
+//	)
+//	want := dom.Node{
+//		Name: "div",
+//		Attributes: []dom.Attribute{
+//			{Name: "class", ValueText: "greeting"},
+//			{Name: "style", ValueText: "color: red;"},
+//		},
+//		Children: []dom.Node{
+//			{InnerText: "Hello, world!"},
+//		},
+//	}
+//	if got.HTML() != want.HTML() {
+//		t.Fatalf("want %#v but got %#v", want.HTML(), got.HTML())
+//	}
 package dom
 
 import (

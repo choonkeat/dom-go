@@ -2,9 +2,33 @@ package dom_test
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/choonkeat/dom-go"
 )
+
+func TestAttribute(t *testing.T) {
+	got := dom.Div(
+		dom.Attrs(
+			"class", "greeting",
+			"style", "color: red;",
+		),
+		dom.Text("Hello, world!"),
+	)
+	want := dom.Node{
+		Name: "div",
+		Attributes: []dom.Attribute{
+			{Name: "class", ValueText: "greeting"},
+			{Name: "style", ValueText: "color: red;"},
+		},
+		Children: []dom.Node{
+			{InnerText: "Hello, world!"},
+		},
+	}
+	if got.HTML() != want.HTML() {
+		t.Fatalf("want %#v but got %#v", want.HTML(), got.HTML())
+	}
+}
 
 func Example() {
 	fmt.Println(
