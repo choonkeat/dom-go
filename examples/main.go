@@ -8,6 +8,7 @@ import (
 	"github.com/choonkeat/dom-go"
 )
 
+// Given a string, return a <ul> with 4 <li> elements
 func body(s string) dom.Node {
 	return dom.Element("ul",
 		dom.Attrs(),
@@ -41,7 +42,6 @@ func main() {
 	http.HandleFunc("/tmpl", func(w http.ResponseWriter, r *http.Request) {
 		templateName := "index.html"
 		tmpl, err := template.New(templateName).Parse(`
-			<!DOCTYPE html>
 			<html>
 				<head>
 					<title>dom-go</title>

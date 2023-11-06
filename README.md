@@ -32,6 +32,12 @@ notice the text values are html safe
 fmt.Println(elem.HTML())
 ```
 
+or in a `http.HandlerFunc`
+
+```go
+w.Write([]byte(elem.HTML()))
+```
+
 ## Usage (html/template)
 
 ```go
