@@ -31,6 +31,7 @@ package dom
 
 import (
 	"html/template"
+	"strings"
 )
 
 // Attrs is the defacto helper function to provide `[]Attribute` to a `Node`
@@ -107,21 +108,23 @@ func (e Node) HTML() template.HTML {
 		return template.HTML(template.HTMLEscapeString(e.InnerText))
 	}
 
-	var attrsHTML template.HTML
+	var attrsHTML strings.Builder
 	for _, attr := range e.Attributes {
-		attrsHTML += " " + attr.HTML()
+		attrsHTML.WriteString(string(" " + attr.HTML()))
 	}
-	childrenHTML := e.InnerHTML
-	if childrenHTML == "" {
-		childrenHTML = template.HTML(template.HTMLEscapeString(e.InnerText))
+
+	var childrenHTML strings.Builder
+	childrenHTML.WriteString(string(e.InnerHTML))
+	if childrenHTML.Len() == 0 {
+		childrenHTML.WriteString(template.HTMLEscapeString(e.InnerText))
 	}
-	if childrenHTML == "" {
+	if childrenHTML.Len() == 0 {
 		for _, child := range e.Children {
-			childrenHTML += child.HTML()
+			childrenHTML.WriteString(string(child.HTML()))
 		}
 	}
 	tagName := template.HTMLEscapeString(e.Name)
-	return template.HTML("<" + tagName + string(attrsHTML) + ">" + string(childrenHTML) + "</" + tagName + ">")
+	return template.HTML("<" + tagName + attrsHTML.String() + ">" + childrenHTML.String() + "</" + tagName + ">")
 }
 
 // Helper functions for every html element, using Element() and Text() helpers.
