@@ -4,22 +4,20 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"strings"
 	"testing"
 
 	"github.com/choonkeat/dom-go"
 )
 
 func TestAttribute(t *testing.T) {
-	var gotHTML, wantHTML strings.Builder
-	dom.Div(
+	got := dom.Div(
 		dom.Attrs(
 			"class", "greeting",
 			"style", "color: red;",
 		),
 		dom.Text("Hello, world!"),
-	).HTML(&gotHTML)
-	dom.Node{
+	)
+	want := dom.Node{
 		Name: "div",
 		Attributes: []dom.Attribute{
 			{Name: "class", ValueText: "greeting"},
@@ -28,9 +26,9 @@ func TestAttribute(t *testing.T) {
 		Children: []dom.Node{
 			{InnerText: "Hello, world!"},
 		},
-	}.HTML(&wantHTML)
-	if gotHTML.String() != wantHTML.String() {
-		t.Fatalf("want %#v but got %#v", wantHTML.String(), gotHTML.String())
+	}
+	if got.HTML() != want.HTML() {
+		t.Fatalf("want %#v but got %#v", want.HTML(), got.HTML())
 	}
 }
 
@@ -44,7 +42,7 @@ func Example() {
 				dom.Attrs(),
 				dom.Text("10"),
 			),
-		).HTML(nil).String(),
+		).HTML(),
 	)
 	// Output: <div class="1 2 3" data-foo="4&lt;&#39;&#34;5&#34;&#39;&gt;6">&lt;oops&gt;789&lt;/oops&gt;<strong>10</strong></div>
 }
@@ -56,7 +54,7 @@ func ExampleAttrs() {
 				"href", "https://google.com",
 				"target", "_blank",
 			),
-		).HTML(nil).String(),
+		).HTML(),
 	)
 	// Output: <div href="https://google.com" target="_blank"></div>
 }
@@ -73,24 +71,24 @@ func ExampleElement() {
 				dom.Attrs(),
 				dom.Text("Google"),
 			),
-		).HTML(nil).String(),
+		).HTML(),
 	)
 	// Output: <a href="https://google.com" target="_blank">Goo&lt;g&gt;le<blockquote>Google</blockquote></a>
 }
 
 func ExampleText() {
 	fmt.Println(
-		dom.Text("Goo<g>le").HTML(nil).String(),
+		dom.Text("Goo<g>le").HTML(),
 	)
 	// Output: Goo&lt;g&gt;le
 }
 
 func BenchmarkAttrHTML(b *testing.B) {
+
 	for i := 0; i < b.N; i++ {
-		var sb strings.Builder
 		dom.Attrs(
 			"href", "https://google.com",
-		)[0].HTML(&sb).String()
+		)[0].HTML()
 	}
 	b.ReportAllocs()
 	b.ReportMetric(float64(b.N), "AttrHTML")
@@ -98,7 +96,6 @@ func BenchmarkAttrHTML(b *testing.B) {
 
 func BenchmarkNodeHTML(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		var sb strings.Builder
 		dom.A(
 			dom.Attrs(),
 			dom.Text("Goo<g>le"),
@@ -106,7 +103,7 @@ func BenchmarkNodeHTML(b *testing.B) {
 				dom.Attrs(),
 				dom.Text("Google"),
 			),
-		).HTML(&sb).String()
+		).HTML()
 	}
 	b.ReportAllocs()
 	b.ReportMetric(float64(b.N), "NodeHTML")

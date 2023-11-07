@@ -77,11 +77,11 @@ type Attribute struct {
 }
 
 // HTML returns the HTML representation of the attribute.
-func (a Attribute) HTML(sb *strings.Builder) *strings.Builder {
-	if sb == nil {
-		sb = &strings.Builder{}
-	}
+func (a Attribute) HTML() template.HTML {
+	return template.HTML(a.buildHTML(&strings.Builder{}).String())
+}
 
+func (a Attribute) buildHTML(sb *strings.Builder) *strings.Builder {
 	valueHTML := a.ValueHTML
 	if valueHTML == "" {
 		valueHTML = template.HTMLAttr(template.HTMLEscapeString(a.ValueText))
@@ -108,11 +108,11 @@ type Node struct {
 }
 
 // HTML returns the HTML representation of the node.
-func (e Node) HTML(sb *strings.Builder) *strings.Builder {
-	if sb == nil {
-		sb = &strings.Builder{}
-	}
+func (e Node) HTML() template.HTML {
+	return template.HTML(e.buildHTML(&strings.Builder{}).String())
+}
 
+func (e Node) buildHTML(sb *strings.Builder) *strings.Builder {
 	if e.Name == "" {
 		if e.InnerHTML != "" {
 			sb.WriteString(string(e.InnerHTML))
@@ -127,7 +127,7 @@ func (e Node) HTML(sb *strings.Builder) *strings.Builder {
 
 	for _, attr := range e.Attributes {
 		sb.WriteString(" ")
-		attr.HTML(sb)
+		attr.buildHTML(sb)
 	}
 	sb.WriteString(">")
 	if e.InnerHTML != "" {
@@ -136,7 +136,7 @@ func (e Node) HTML(sb *strings.Builder) *strings.Builder {
 		sb.WriteString(template.HTMLEscapeString(e.InnerText))
 	} else {
 		for _, child := range e.Children {
-			child.HTML(sb)
+			child.buildHTML(sb)
 		}
 	}
 	sb.WriteString("</" + tagName + ">")
