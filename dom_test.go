@@ -84,7 +84,6 @@ func ExampleText() {
 }
 
 func BenchmarkAttrHTML(b *testing.B) {
-
 	for i := 0; i < b.N; i++ {
 		dom.Attrs(
 			"href", "https://google.com",
@@ -97,7 +96,10 @@ func BenchmarkAttrHTML(b *testing.B) {
 func BenchmarkNodeHTML(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		dom.A(
-			dom.Attrs(),
+			dom.Attrs(
+				"href", "https://google.com",
+				"target", "_blank",
+			),
 			dom.Text("Goo<g>le"),
 			dom.Blockquote(
 				dom.Attrs(),
@@ -120,6 +122,7 @@ func BenchmarkHtmlTemplate(b *testing.B) {
 		Text1  string
 		Text2  string
 	}
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		d := data{
 			Href:   "https://google.com",
