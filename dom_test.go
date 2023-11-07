@@ -1,7 +1,9 @@
 package dom_test
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"testing"
 
 	"github.com/choonkeat/dom-go"
@@ -79,4 +81,57 @@ func ExampleText() {
 		dom.Text("Goo<g>le").HTML(),
 	)
 	// Output: Goo&lt;g&gt;le
+}
+
+func BenchmarkAttrHTML(b *testing.B) {
+
+	for i := 0; i < b.N; i++ {
+		dom.Attrs(
+			"href", "https://google.com",
+		)[0].HTML()
+	}
+	b.ReportAllocs()
+	b.ReportMetric(float64(b.N), "AttrHTML")
+}
+
+func BenchmarkNodeHTML(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		dom.A(
+			dom.Attrs(),
+			dom.Text("Goo<g>le"),
+			dom.Blockquote(
+				dom.Attrs(),
+				dom.Text("Google"),
+			),
+		).HTML()
+	}
+	b.ReportAllocs()
+	b.ReportMetric(float64(b.N), "NodeHTML")
+}
+
+func BenchmarkHtmlTemplate(b *testing.B) {
+	tmpl, err := template.New("index.html").Parse(`<a href="{{ .Href }}" target="{{ .Target }}">{{ .Text1 }}<blockquote>{{ .Text2 }}</blockquote></a>`)
+	if err != nil {
+		b.Fatal(err)
+	}
+	type data struct {
+		Href   string
+		Target string
+		Text1  string
+		Text2  string
+	}
+	for i := 0; i < b.N; i++ {
+		d := data{
+			Href:   "https://google.com",
+			Target: "_blank",
+			Text1:  "Goo<g>le",
+			Text2:  "Google",
+		}
+		var buf bytes.Buffer
+		if err := tmpl.ExecuteTemplate(&buf, "index.html", d); err != nil {
+			b.Fatal(err)
+		}
+	}
+	b.ReportAllocs()
+	b.ReportMetric(float64(b.N), "HTMLTemplate")
 }
