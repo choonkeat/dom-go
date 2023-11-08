@@ -15,7 +15,8 @@ func TestAttribute(t *testing.T) {
 			"class", "greeting",
 			"style", "color: red;",
 		),
-		dom.Text("Hello, world!"),
+		dom.InnerText("Hello, world!"),
+		dom.InnerHTML("<strong>Hello!</strong>"),
 	)
 	want := dom.Node{
 		Name: "div",
@@ -25,6 +26,7 @@ func TestAttribute(t *testing.T) {
 		},
 		Children: []dom.Node{
 			{InnerText: "Hello, world!"},
+			{InnerHTML: "<strong>Hello!</strong>"},
 		},
 	}
 	if got.HTML() != want.HTML() {
@@ -37,14 +39,15 @@ func Example() {
 		// use dom.Element or dom.Div
 		dom.Element("div",
 			dom.Attrs("class", "1 2 3", "data-foo", `4<'"5"'>6`),
-			dom.Text("<oops>789</oops>"),
+			dom.InnerText("<oops>789</oops>"),
+			dom.InnerHTML("<em>012</em>"),
 			dom.Strong(
 				dom.Attrs(),
-				dom.Text("10"),
+				dom.InnerText("10"),
 			),
 		).HTML(),
 	)
-	// Output: <div class="1 2 3" data-foo="4&lt;&#39;&#34;5&#34;&#39;&gt;6">&lt;oops&gt;789&lt;/oops&gt;<strong>10</strong></div>
+	// Output: <div class="1 2 3" data-foo="4&lt;&#39;&#34;5&#34;&#39;&gt;6">&lt;oops&gt;789&lt;/oops&gt;<em>012</em><strong>10</strong></div>
 }
 
 func ExampleAttrs() {
@@ -66,21 +69,29 @@ func ExampleElement() {
 				"href", "https://google.com",
 				"target", "_blank",
 			),
-			dom.Text("Goo<g>le"),
+			dom.InnerText("Goo<g>le"),
+			dom.InnerHTML("Goo<g>le"),
 			dom.Blockquote(
 				dom.Attrs(),
-				dom.Text("Google"),
+				dom.InnerText("Google"),
 			),
 		).HTML(),
 	)
-	// Output: <a href="https://google.com" target="_blank">Goo&lt;g&gt;le<blockquote>Google</blockquote></a>
+	// Output: <a href="https://google.com" target="_blank">Goo&lt;g&gt;leGoo<g>le<blockquote>Google</blockquote></a>
 }
 
-func ExampleText() {
+func ExampleInnerText() {
 	fmt.Println(
-		dom.Text("Goo<g>le").HTML(),
+		dom.InnerText("Goo<g>le").HTML(),
 	)
 	// Output: Goo&lt;g&gt;le
+}
+
+func ExampleInnerHTML() {
+	fmt.Println(
+		dom.InnerHTML("Goo<g>le").HTML(),
+	)
+	// Output: Goo<g>le
 }
 
 func BenchmarkAttrHTML(b *testing.B) {
@@ -100,10 +111,10 @@ func BenchmarkNodeHTML(b *testing.B) {
 				"href", "https://google.com",
 				"target", "_blank",
 			),
-			dom.Text("Goo<g>le"),
+			dom.InnerText("Goo<g>le"),
 			dom.Blockquote(
 				dom.Attrs(),
-				dom.Text("Google"),
+				dom.InnerText("Google"),
 			),
 		).HTML()
 	}
