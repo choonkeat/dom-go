@@ -15,7 +15,7 @@ func TestAttribute(t *testing.T) {
 			"class", "greeting",
 			"style", "color: red;",
 		),
-		dom.Text("Hello, world!"),
+		dom.InnerText("Hello, world!"),
 		dom.InnerHTML("<strong>Hello!</strong>"),
 	)
 	want := dom.Node{
@@ -39,11 +39,11 @@ func Example() {
 		// use dom.Element or dom.Div
 		dom.Element("div",
 			dom.Attrs("class", "1 2 3", "data-foo", `4<'"5"'>6`),
-			dom.Text("<oops>789</oops>"),
+			dom.InnerText("<oops>789</oops>"),
 			dom.InnerHTML("<em>012</em>"),
 			dom.Strong(
 				dom.Attrs(),
-				dom.Text("10"),
+				dom.InnerText("10"),
 			),
 		).HTML(),
 	)
@@ -69,20 +69,20 @@ func ExampleElement() {
 				"href", "https://google.com",
 				"target", "_blank",
 			),
-			dom.Text("Goo<g>le"),
+			dom.InnerText("Goo<g>le"),
 			dom.InnerHTML("Goo<g>le"),
 			dom.Blockquote(
 				dom.Attrs(),
-				dom.Text("Google"),
+				dom.InnerText("Google"),
 			),
 		).HTML(),
 	)
 	// Output: <a href="https://google.com" target="_blank">Goo&lt;g&gt;leGoo<g>le<blockquote>Google</blockquote></a>
 }
 
-func ExampleText() {
+func ExampleInnerText() {
 	fmt.Println(
-		dom.Text("Goo<g>le").HTML(),
+		dom.InnerText("Goo<g>le").HTML(),
 	)
 	// Output: Goo&lt;g&gt;le
 }
@@ -111,10 +111,10 @@ func BenchmarkNodeHTML(b *testing.B) {
 				"href", "https://google.com",
 				"target", "_blank",
 			),
-			dom.Text("Goo<g>le"),
+			dom.InnerText("Goo<g>le"),
 			dom.Blockquote(
 				dom.Attrs(),
-				dom.Text("Google"),
+				dom.InnerText("Google"),
 			),
 		).HTML()
 	}

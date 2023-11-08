@@ -12,7 +12,7 @@
 //			"class", "greeting",
 //			"style", "color: red;",
 //		),
-//		dom.Text("Hello, world!"),
+//		dom.InnerText("Hello, world!"),
 //	)
 //	want := dom.Node{
 //		Name: "div",
@@ -57,8 +57,8 @@ func Element(name string, attrs []Attribute, children ...Node) Node {
 	}
 }
 
-// Text is a helper function to construct a Node that has no tag no attributes and no children.
-func Text(s string) Node {
+// InnerText is a helper function to construct a Node that has no tag no attributes and no children.
+func InnerText(s string) Node {
 	return Node{
 		InnerText: s,
 	}
@@ -150,7 +150,7 @@ func (e Node) buildHTML(sb *strings.Builder) *strings.Builder {
 	return sb
 }
 
-// Helper functions for every html element, using Element() and Text() helpers.
+// Helper functions for every html element, using Element() and InnerText() helpers.
 
 // A returns a Node with name "a".
 func A(attrs []Attribute, children ...Node) Node {
