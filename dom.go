@@ -64,6 +64,13 @@ func Text(s string) Node {
 	}
 }
 
+// InnerHTML is a helper function to construct a Node that has no tag no attributes and no children.
+func InnerHTML(s string) Node {
+	return Node{
+		InnerHTML: template.HTML(s),
+	}
+}
+
 // Attribute represents a HTML attribute.
 //
 // This struct is fully exported for the convenience of asserting values during tests
