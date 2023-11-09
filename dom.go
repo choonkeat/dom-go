@@ -31,6 +31,7 @@ package dom
 
 import (
 	"html/template"
+	"io"
 	"strings"
 )
 
@@ -85,19 +86,24 @@ type Attribute struct {
 
 // HTML returns the HTML representation of the attribute.
 func (a Attribute) HTML() template.HTML {
-	return template.HTML(a.buildHTML(&strings.Builder{}).String())
+	sb := &strings.Builder{}
+	a.buildHTML(sb)
+	return template.HTML(sb.String())
 }
 
-func (a Attribute) buildHTML(sb *strings.Builder) *strings.Builder {
+func (a Attribute) Write(w io.StringWriter) {
+	a.buildHTML(w)
+}
+
+func (a Attribute) buildHTML(w io.StringWriter) {
 	valueHTML := a.ValueHTML
 	if valueHTML == "" {
 		valueHTML = template.HTMLAttr(template.HTMLEscapeString(a.ValueText))
 	}
-	sb.WriteString(template.HTMLEscapeString(a.Name))
-	sb.WriteString("=\"")
-	sb.WriteString(string(valueHTML))
-	sb.WriteString("\"")
-	return sb
+	w.WriteString(template.HTMLEscapeString(a.Name))
+	w.WriteString("=\"")
+	w.WriteString(string(valueHTML))
+	w.WriteString("\"")
 }
 
 // Node represents a HTML element.
@@ -116,38 +122,43 @@ type Node struct {
 
 // HTML returns the HTML representation of the node.
 func (e Node) HTML() template.HTML {
-	return template.HTML(e.buildHTML(&strings.Builder{}).String())
+	sb := &strings.Builder{}
+	e.buildHTML(sb)
+	return template.HTML(sb.String())
 }
 
-func (e Node) buildHTML(sb *strings.Builder) *strings.Builder {
+func (e Node) Write(w io.StringWriter) {
+	e.buildHTML(w)
+}
+
+func (e Node) buildHTML(w io.StringWriter) {
 	if e.Name == "" {
 		if e.InnerHTML != "" {
-			sb.WriteString(string(e.InnerHTML))
-			return sb
+			w.WriteString(string(e.InnerHTML))
+			return
 		}
-		sb.WriteString(template.HTMLEscapeString(e.InnerText))
-		return sb
+		w.WriteString(template.HTMLEscapeString(e.InnerText))
+		return
 	}
 	tagName := template.HTMLEscapeString(e.Name)
-	sb.WriteString("<")
-	sb.WriteString(tagName)
+	w.WriteString("<")
+	w.WriteString(tagName)
 
 	for _, attr := range e.Attributes {
-		sb.WriteString(" ")
-		attr.buildHTML(sb)
+		w.WriteString(" ")
+		attr.buildHTML(w)
 	}
-	sb.WriteString(">")
+	w.WriteString(">")
 	if e.InnerHTML != "" {
-		sb.WriteString(string(e.InnerHTML))
+		w.WriteString(string(e.InnerHTML))
 	} else if e.InnerText != "" {
-		sb.WriteString(template.HTMLEscapeString(e.InnerText))
+		w.WriteString(template.HTMLEscapeString(e.InnerText))
 	} else {
 		for _, child := range e.Children {
-			child.buildHTML(sb)
+			child.buildHTML(w)
 		}
 	}
-	sb.WriteString("</" + tagName + ">")
-	return sb
+	w.WriteString("</" + tagName + ">")
 }
 
 // Helper functions for every html element, using Element() and InnerText() helpers.
