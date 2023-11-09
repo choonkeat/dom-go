@@ -38,16 +38,18 @@ func Example() {
 	fmt.Println(
 		// use dom.Element or dom.Div
 		dom.Element("div",
-			dom.Attrs("class", "1 2 3", "data-foo", `4<'"5"'>6`),
+			dom.Attrs(
+				"class", "1 2 3",
+				"data-foo", `4<'"5"'>6`,
+			),
 			dom.InnerText("<oops>789</oops>"),
-			dom.InnerHTML("<em>012</em>"),
-			dom.Strong(
+			dom.P(
 				dom.Attrs(),
-				dom.InnerText("10"),
+				dom.InnerHTML("<strong>10</strong>"),
 			),
 		).HTML(),
 	)
-	// Output: <div class="1 2 3" data-foo="4&lt;&#39;&#34;5&#34;&#39;&gt;6">&lt;oops&gt;789&lt;/oops&gt;<em>012</em><strong>10</strong></div>
+	// Output: <div class="1 2 3" data-foo="4&lt;&#39;&#34;5&#34;&#39;&gt;6">&lt;oops&gt;789&lt;/oops&gt;<p><strong>10</strong></p></div>
 }
 
 func ExampleAttrs() {

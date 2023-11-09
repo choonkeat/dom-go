@@ -6,11 +6,14 @@ Construct HTML elements in Go. Can be used together with `html/template` templat
 
 ```go
 elem := dom.Element("div",
-    dom.Attrs("class", "1 2 3", "data-foo", `4<'"5"'>6`),
-    dom.Text("<oops>789</oops>"),
-    dom.Strong(
+    dom.Attrs(
+        "class", "1 2 3",
+        "data-foo", `4<'"5"'>6`,
+    ),
+    dom.InnerText("<oops>789</oops>"),
+    dom.P(
         dom.Attrs(),
-        dom.Text("10"),
+        dom.InnerHTML("<strong>10</strong>"),
     ),
 )
 ```
@@ -19,12 +22,14 @@ representing HTML
 
 ```html
 <div class="1 2 3" data-foo="4&lt;&#39;&#34;5&#34;&#39;&gt;6">
-  &lt;oops&gt;789&lt;/oops&gt;
-  <strong>10</strong>
+    &lt;oops&gt;789&lt;/oops&gt;
+    <p><strong>10</strong></p>
 </div>
 ```
 
-notice the text values are html safe
+Indented for illustrative purpose; there are no newlines introduced.
+
+Notice the text values added via `InnerText` are html safe and `InnerHTML` trusts your raw html
 
 ## Usage (Standalone)
 
