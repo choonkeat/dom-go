@@ -12,8 +12,10 @@ import (
 func TestAttribute(t *testing.T) {
 	got := dom.Div(
 		dom.Attrs(
+			"required",
 			"class", "greeting",
 			"style", "color: red;",
+			"checked",
 		),
 		dom.InnerText("Hello, world!"),
 		dom.InnerHTML("<strong>Hello!</strong>"),
@@ -21,8 +23,10 @@ func TestAttribute(t *testing.T) {
 	want := dom.Node{
 		Name: "div",
 		Attributes: []dom.Attribute{
+			{Name: "required"},
 			{Name: "class", ValueText: "greeting"},
 			{Name: "style", ValueText: "color: red;"},
+			{Name: "checked"},
 		},
 		Children: []dom.Node{
 			{InnerText: "Hello, world!"},

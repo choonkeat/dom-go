@@ -38,11 +38,48 @@ import (
 func Attrs(keyvalues ...string) []Attribute {
 	var attrs []Attribute
 	kvlen := len(keyvalues)
-	for i := 0; i < kvlen; i += 2 {
-		attrs = append(attrs, Attribute{
-			Name:      keyvalues[i],
-			ValueText: keyvalues[i+1],
-		})
+	for i := 0; i < kvlen; i++ {
+		key := keyvalues[i]
+		switch key {
+		// list of boolean attributes from
+		//  https://html.spec.whatwg.org/multipage/indices.html#attributes-3
+		case "allowfullscreen",
+			"async",
+			"autofocus",
+			"autoplay",
+			"checked",
+			"controls",
+			"default",
+			"defer",
+			"disabled",
+			"formnovalidate",
+			"inert",
+			"ismap",
+			"itemscope",
+			"loop",
+			"multiple",
+			"muted",
+			"nomodule",
+			"novalidate",
+			"open",
+			"playsinline",
+			"readonly",
+			"required",
+			"reversed",
+			"selected",
+			"shadowrootdelegatesfocus":
+			attrs = append(attrs, Attribute{
+				Name: key,
+			})
+
+		default:
+			attrs = append(attrs, Attribute{
+				Name:      key,
+				ValueText: keyvalues[i+1],
+			})
+			i++
+		}
+
 	}
 	return attrs
 }
@@ -94,9 +131,11 @@ func (a Attribute) buildHTML(sb *strings.Builder) *strings.Builder {
 		valueHTML = template.HTMLAttr(template.HTMLEscapeString(a.ValueText))
 	}
 	sb.WriteString(template.HTMLEscapeString(a.Name))
-	sb.WriteString("=\"")
-	sb.WriteString(string(valueHTML))
-	sb.WriteString("\"")
+	if valueHTML != "" {
+		sb.WriteString("=\"")
+		sb.WriteString(string(valueHTML))
+		sb.WriteString("\"")
+	}
 	return sb
 }
 
