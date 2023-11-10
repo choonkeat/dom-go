@@ -136,7 +136,15 @@ func (e Node) buildHTML(sb *strings.Builder) *strings.Builder {
 		sb.WriteString(" ")
 		attr.buildHTML(sb)
 	}
-	sb.WriteString(">")
+
+	switch e.Name {
+	case "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr":
+		sb.WriteString("/>")
+		return sb
+	default:
+		sb.WriteString(">")
+	}
+
 	if e.InnerHTML != "" {
 		sb.WriteString(string(e.InnerHTML))
 	} else if e.InnerText != "" {
@@ -168,8 +176,8 @@ func Address(attrs []Attribute, children ...Node) Node {
 }
 
 // Area returns a Node with name "area".
-func Area(attrs []Attribute, children ...Node) Node {
-	return Element("area", attrs, children...)
+func Area(attrs []Attribute) Node {
+	return Element("area", attrs)
 }
 
 // Article returns a Node with name "article".
@@ -193,8 +201,8 @@ func B(attrs []Attribute, children ...Node) Node {
 }
 
 // Base returns a Node with name "base".
-func Base(attrs []Attribute, children ...Node) Node {
-	return Element("base", attrs, children...)
+func Base(attrs []Attribute) Node {
+	return Element("base", attrs)
 }
 
 // Bdi returns a Node with name "bdi".
@@ -248,8 +256,8 @@ func Code(attrs []Attribute, children ...Node) Node {
 }
 
 // Col returns a Node with name "col".
-func Col(attrs []Attribute, children ...Node) Node {
-	return Element("col", attrs, children...)
+func Col(attrs []Attribute) Node {
+	return Element("col", attrs)
 }
 
 // Colgroup returns a Node with name "colgroup".
@@ -313,8 +321,8 @@ func Em(attrs []Attribute, children ...Node) Node {
 }
 
 // Embed returns a Node with name "embed".
-func Embed(attrs []Attribute, children ...Node) Node {
-	return Element("embed", attrs, children...)
+func Embed(attrs []Attribute) Node {
+	return Element("embed", attrs)
 }
 
 // Fieldset returns a Node with name "fieldset".
@@ -508,8 +516,8 @@ func P(attrs []Attribute, children ...Node) Node {
 }
 
 // Param returns a Node with name "param".
-func Param(attrs []Attribute, children ...Node) Node {
-	return Element("param", attrs, children...)
+func Param(attrs []Attribute) Node {
+	return Element("param", attrs)
 }
 
 // Picture returns a Node with name "picture".
