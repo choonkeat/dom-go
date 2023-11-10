@@ -34,6 +34,17 @@ func TestAttribute(t *testing.T) {
 	}
 }
 
+func TestInput(t *testing.T) {
+	t.Parallel()
+
+	got := dom.Input(dom.Attrs("name", "username"))
+	want := template.HTML(`<input name="username"/>`)
+
+	if got.HTML() != want {
+		t.Fatalf("want %#v but got %#v", want, got.HTML())
+	}
+}
+
 func Example() {
 	fmt.Println(
 		// use dom.Element or dom.Div
