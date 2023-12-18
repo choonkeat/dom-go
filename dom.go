@@ -121,13 +121,19 @@ func (e Node) HTML() template.HTML {
 
 func (e Node) buildHTML(sb *strings.Builder) *strings.Builder {
 	if e.Name == "" {
+		// buildChildrenHTML (inline to save 32B and 1 alloc)
 		if e.InnerHTML != "" {
 			sb.WriteString(string(e.InnerHTML))
-			return sb
+		} else if e.InnerText != "" {
+			sb.WriteString(template.HTMLEscapeString(e.InnerText))
+		} else {
+			for _, child := range e.Children {
+				child.buildHTML(sb)
+			}
 		}
-		sb.WriteString(template.HTMLEscapeString(e.InnerText))
 		return sb
 	}
+
 	tagName := template.HTMLEscapeString(e.Name)
 	sb.WriteString("<")
 	sb.WriteString(tagName)
@@ -145,6 +151,7 @@ func (e Node) buildHTML(sb *strings.Builder) *strings.Builder {
 		sb.WriteString(">")
 	}
 
+	// buildChildrenHTML (inline to save 32B and 1 alloc)
 	if e.InnerHTML != "" {
 		sb.WriteString(string(e.InnerHTML))
 	} else if e.InnerText != "" {

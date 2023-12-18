@@ -45,6 +45,25 @@ func TestInput(t *testing.T) {
 	}
 }
 
+func TestEmptyElement(t *testing.T) {
+	t.Parallel()
+
+	got :=
+		dom.Element(
+			"", dom.Attrs(),
+			dom.InnerText("Good "),
+			dom.B(dom.Attrs(), dom.InnerText("morning")),
+			dom.InnerText(", world!"),
+		)
+
+	want := template.HTML(`Good <b>morning</b>, world!`)
+
+	if got.HTML() != want {
+		t.Fatalf("want %#v but got %#v", want, got.HTML())
+	}
+
+}
+
 func Example() {
 	fmt.Println(
 		// use dom.Element or dom.Div
