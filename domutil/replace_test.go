@@ -17,13 +17,13 @@ func TestReplaceAll(t *testing.T) {
 		want  template.HTML
 	}{
 		{
-			given: dom.InnerHTML("hello <em>world!</em>"),
-			match: "world",
+			given: dom.InnerHTML("hello <em>&lt;strong&gt;world&lt;/strong&gt;!</em>"),
+			match: "<strong>world</strong>",
 			want:  `hello <em><b class="abc def123">universe</b>!</em>`,
 		},
 		{
-			given: dom.InnerText("hello <em>world!</em>"),
-			match: "world",
+			given: dom.InnerText("hello <em><strong>world</strong>!</em>"),
+			match: "<strong>world</strong>",
 			want:  `hello &lt;em&gt;<b class="abc def123">universe</b>!&lt;/em&gt;`,
 		},
 		{

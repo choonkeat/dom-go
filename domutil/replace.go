@@ -7,15 +7,27 @@ import (
 	"github.com/choonkeat/dom-go"
 )
 
-// ReplaceAll looks for all occurrences of the string s in the target node
-// and replaces them with the node. It does not return a value, the target
-// node is modified in place.
-func ReplaceAll(target *dom.Node, match string, node dom.Node) {
+// ReplaceAll allows user content (not html) to be replaced with a html node, while preserving
+// the original content. e.g. replacing all occurrences of "{your email}" with a
+// `<a href="mailto:...">...</a>` html.
+//
+// It looks for all occurrences of matchText as InnerText, or escaped(matchText) as InnerHTML,
+// or recursively in all children of the target node. It does not return a value since the
+// target node is modified in place.
+func ReplaceAll(target *dom.Node, matchText string, node dom.Node) {
 	switch {
 	case target.InnerHTML != "":
-		target.InnerHTML = template.HTML(strings.ReplaceAll(string(target.InnerHTML), match, string(node.HTML())))
+		target.InnerHTML = template.HTML(
+			strings.ReplaceAll(
+				string(target.InnerHTML),
+				template.HTMLEscapeString(matchText),
+				string(node.HTML()),
+			),
+		)
 	case target.InnerText != "":
-		parts := strings.Split(target.InnerText, match)
+		// we're replacing with HTML, so we need to escape the parts
+		// and switch to InnerHTML
+		parts := strings.Split(target.InnerText, matchText)
 		if len(parts) == 1 {
 			return
 		}
@@ -26,7 +38,7 @@ func ReplaceAll(target *dom.Node, match string, node dom.Node) {
 		target.InnerText = ""
 	default:
 		for i, child := range target.Children {
-			ReplaceAll(&child, match, node)
+			ReplaceAll(&child, matchText, node)
 			target.Children[i] = child
 		}
 	}
