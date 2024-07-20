@@ -12,9 +12,8 @@ import (
 // `<a href="mailto:...">...</a>` html.
 //
 // It looks for all occurrences of matchText as InnerText, or escaped(matchText) as InnerHTML,
-// or recursively in all children of the target node. It does not return a value since the
-// target node is modified in place.
-func ReplaceAll(target *dom.Node, matchText string, node dom.Node) {
+// or recursively in all children of the target node.
+func ReplaceAll(target dom.Node, matchText string, node dom.Node) dom.Node {
 	switch {
 	case target.InnerHTML != "":
 		target.InnerHTML = template.HTML(
@@ -29,7 +28,7 @@ func ReplaceAll(target *dom.Node, matchText string, node dom.Node) {
 		// and switch to InnerHTML
 		parts := strings.Split(target.InnerText, matchText)
 		if len(parts) == 1 {
-			return
+			return target
 		}
 		for i := range parts {
 			parts[i] = template.HTMLEscapeString(parts[i])
@@ -37,9 +36,11 @@ func ReplaceAll(target *dom.Node, matchText string, node dom.Node) {
 		target.InnerHTML = template.HTML(strings.Join(parts, string(node.HTML())))
 		target.InnerText = ""
 	default:
-		for i, child := range target.Children {
-			ReplaceAll(&child, matchText, node)
-			target.Children[i] = child
+		newChildren := make([]dom.Node, 0, len(target.Children))
+		for _, child := range target.Children {
+			newChildren = append(newChildren, ReplaceAll(child, matchText, node))
 		}
+		target.Children = newChildren
 	}
+	return target
 }

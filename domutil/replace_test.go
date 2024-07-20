@@ -65,13 +65,12 @@ func TestReplaceAll(t *testing.T) {
 
 	for _, test := range tests {
 		oldHTML := test.given.HTML()
-		domutil.ReplaceAll(&test.given, test.match, replaceNode)
-		actual := test.given
+		actual := domutil.ReplaceAll(test.given, test.match, replaceNode)
 		if got, want := actual.HTML(), test.want; got != want {
 			t.Errorf("\ngot      %q\nbut want %q", got, want)
 		}
-		if oldHTML == test.given.HTML() {
-			t.Errorf("ReplaceAll did not modify the given node")
+		if oldHTML != test.given.HTML() {
+			t.Errorf("ReplaceAll modified the given node")
 		}
 	}
 }
