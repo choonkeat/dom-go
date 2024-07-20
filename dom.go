@@ -32,6 +32,8 @@ package dom
 import (
 	"html/template"
 	"strings"
+
+	_ "github.com/choonkeat/dom-go/domutil"
 )
 
 // Attrs is the defacto helper function to provide `[]Attribute` to a `Node`
