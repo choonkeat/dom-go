@@ -13,12 +13,16 @@ import (
 //
 // It looks for all occurrences of matchText as InnerText, or escaped(matchText) as InnerHTML,
 // or recursively in all children of the target node.
+//
+// If we want to search and replace html, we can just use strings.ReplaceAll(target.HTML(), ...)
 func ReplaceAll(target dom.Node, matchText string, node dom.Node) dom.Node {
 	switch {
 	case target.InnerHTML != "":
 		target.InnerHTML = template.HTML(
 			strings.ReplaceAll(
 				string(target.InnerHTML),
+				// we are replacing user text, not html
+				// :. escape before matching
 				template.HTMLEscapeString(matchText),
 				string(node.HTML()),
 			),
@@ -34,6 +38,7 @@ func ReplaceAll(target dom.Node, matchText string, node dom.Node) dom.Node {
 			parts[i] = template.HTMLEscapeString(parts[i])
 		}
 		target.InnerHTML = template.HTML(strings.Join(parts, string(node.HTML())))
+		// we've switched to representing with InnerHTML, so clear InnerText
 		target.InnerText = ""
 	default:
 		newChildren := make([]dom.Node, 0, len(target.Children))

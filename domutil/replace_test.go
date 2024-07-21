@@ -9,7 +9,8 @@ import (
 )
 
 func TestReplaceAll(t *testing.T) {
-	replaceNode := dom.B(dom.Attrs("class", "abc def123"), dom.InnerText("universe"))
+	// <b class="text-xs">universe</b>
+	replaceNode := dom.B(dom.Attrs("class", "text-xs"), dom.InnerText("universe"))
 
 	tests := []struct {
 		given dom.Node
@@ -17,16 +18,25 @@ func TestReplaceAll(t *testing.T) {
 		want  template.HTML
 	}{
 		{
-			given: dom.InnerHTML("hello <em>&lt;strong&gt;world&lt;/strong&gt;!</em>"),
-			match: "<strong>world</strong>",
-			want:  `hello <em><b class="abc def123">universe</b>!</em>`,
+			// simple scenario showing off the basic scenario this function is designed for
+			given: dom.InnerText("hello world"),
+			match: "world",
+			want:  `hello <b class="text-xs">universe</b>`,
 		},
 		{
-			given: dom.InnerText("hello <em><strong>world</strong>!</em>"),
+			// the `match` text is escaped before matching InnerHTML
+			given: dom.InnerHTML("hello <em>&lt;strong&gt;world&lt;/strong&gt;!</em> <strong>world</strong>!"),
 			match: "<strong>world</strong>",
-			want:  `hello &lt;em&gt;<b class="abc def123">universe</b>!&lt;/em&gt;`,
+			want:  `hello <em><b class="text-xs">universe</b>!</em> <strong>world</strong>!`,
 		},
 		{
+			// the `match` text matches InnerText as-is
+			given: dom.InnerText("hello <em>&lt;strong&gt;world&lt;/strong&gt;!</em> <strong>world</strong>!"),
+			match: "<strong>world</strong>",
+			want:  `hello &lt;em&gt;&amp;lt;strong&amp;gt;world&amp;lt;/strong&amp;gt;!&lt;/em&gt; <b class="text-xs">universe</b>!`,
+		},
+		{
+			// we recursively look into all children of the target node
 			given: dom.Div(
 				dom.Attrs(
 					"class", "my-world",
