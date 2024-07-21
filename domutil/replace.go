@@ -18,28 +18,31 @@ import (
 func ReplaceAll(target dom.Node, matchText string, node dom.Node) dom.Node {
 	switch {
 	case target.InnerHTML != "":
-		target.InnerHTML = template.HTML(
-			strings.ReplaceAll(
-				string(target.InnerHTML),
-				// we are replacing user text, not html
-				// :. escape before matching
-				template.HTMLEscapeString(matchText),
-				string(node.HTML()),
-			),
-		)
-	case target.InnerText != "":
-		// we're replacing with HTML, so we need to escape the parts
-		// and switch to InnerHTML
-		parts := strings.Split(target.InnerText, matchText)
+		parts := strings.Split(string(target.InnerHTML), template.HTMLEscapeString(matchText))
 		if len(parts) == 1 {
 			return target
 		}
-		for i := range parts {
-			parts[i] = template.HTMLEscapeString(parts[i])
+		newParts := make([]dom.Node, 0, len(parts)+len(parts)-1)
+		for i, part := range parts {
+			if i != 0 {
+				newParts = append(newParts, node)
+			}
+			newParts = append(newParts, dom.InnerHTML(part))
 		}
-		target.InnerHTML = template.HTML(strings.Join(parts, string(node.HTML())))
-		// we've switched to representing with InnerHTML, so clear InnerText
-		target.InnerText = ""
+		return Join(newParts...)
+	case target.InnerText != "":
+		parts := strings.Split(string(target.InnerText), matchText)
+		if len(parts) == 1 {
+			return target
+		}
+		newParts := make([]dom.Node, 0, len(parts)+len(parts)-1)
+		for i, part := range parts {
+			if i != 0 {
+				newParts = append(newParts, node)
+			}
+			newParts = append(newParts, dom.InnerText(part))
+		}
+		return Join(newParts...)
 	default:
 		newChildren := make([]dom.Node, 0, len(target.Children))
 		for _, child := range target.Children {
